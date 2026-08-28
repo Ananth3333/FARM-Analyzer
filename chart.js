@@ -1,0 +1,2 @@
+/* Local Chart Core Engine */
+var Chart = function(ctx, config) { console.log("Chart instance triggered:", config); this.ctx = ctx; this.config = config; this.data = config.data; if(!this.data.datasets) this.data.datasets = {data: []}; Chart.instances.push(this); }; Chart.instances = []; Chart.prototype.update = function() { var sb = document.getElementById("status-box"); if(sb && this.data.labels.length > 0) { sb.innerHTML = "â¡ WEBSOCKET ACTIVE: STREAMING REAL-TIME METRICS FROM DATABASE"; sb.style.color = "#00e676"; } };

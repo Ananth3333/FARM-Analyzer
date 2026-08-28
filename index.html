@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0c0f;
+  --panel:#12161b;
+  --card:#1a2129;
+  --card-2:#1f2830;
+  --line:#232c35;
+  --line-soft:#1a2128;
+  --text:#e7edf3;
+  --text-dim:#8a97a5;
+  --text-mute:#5c6b7a;
+  --auto:#39d67a;
+  --auto-dim:#1f6b41;
+  --auto-bg:rgba(57,214,122,.08);
+
+  --manual:#3d97e0;
+  --manual-dim:#1f5586;
+  --manual-bg:rgba(61,151,224,.08);
+
+  --sos:#f0432f;
+  --sos-dim:#8f2419;
+  --sos-bg:rgba(240,67,47,.10);
+
+  --warn:#e8a33d;
+
+  --mono:'JetBrains Mono', monospace;
+  --sans:'Inter', -apple-system, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;margin:0;}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  width:100%;
+  height:100%;
+  min-width:100%;
+  min-height:100%;
+  overflow:hidden;
+  display:flex;
+  position:relative;
+}
+::selection{background:var(--manual);color:#fff;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text-mute);}
+
+button{font-family:inherit;}
+:focus-visible{outline:2px solid var(--manual);outline-offset:2px;}
+
+/* ============ APP SHELL ============ */
+.app{display:flex;width:100%;height:100%;min-width:100%;min-height:100%;}
+
+/* ============ LEFT RAIL — NAV / SESSIONS ============ */
+.rail{
+  width:236px;
+  background:var(--panel);
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  flex-shrink:0;
+}
+.rail-brand{
+  padding:22px 20px 18px;
+  border-bottom:1px solid var(--line);
+}
+.rail-brand .mark{
+  display:flex;align-items:center;gap:9px;
+}
+.rail-brand .mark-dot{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--auto);
+  box-shadow:0 0 8px var(--auto);
+  flex-shrink:0;
+}
+.rail-brand h1{
+  font-family:var(--mono);
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.06em;
+}
+.rail-brand .sub{
+  font-size:10.5px;
+  color:var(--text-mute);
+  margin-top:5px;
+  font-family:var(--mono);
+  letter-spacing:.04em;
+}
+
+.rail-section{padding:16px 14px;border-bottom:1px solid var(--line-soft);}
+.rail-label{
+  font-size:10px;
+  color:var(--text-mute);
+  text-transform:uppercase;
+  letter-spacing:.09em;
+  font-weight:600;
+  padding:0 6px 10px;
+}
+
+.unit-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:12.5px;
+  color:var(--text-dim);
+  border:1px solid transparent;
+  margin-bottom:3px;
+}
+.unit-item:hover{background:var(--card);}
+.unit-item.active{background:var(--card);border-color:var(--line);color:var(--text);}
+.unit-pulse{width:6px;height:6px;border-radius:50%;background:var(--auto);flex-shrink:0;}
+.unit-item .unit-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.unit-item .unit-loc{font-family:var(--mono);font-size:10px;color:var(--text-mute);}
+
+.rail-footer{
+  margin-top:auto;
+  padding:14px;
+  border-top:1px solid var(--line);
+}
+.op-card{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;
+  border-radius:8px;
+  background:var(--card);
+}
+.op-avatar{
+  width:28px;height:28px;border-radius:6px;
+  background:linear-gradient(135deg,var(--manual),var(--manual-dim));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:700;font-size:11px;
+  flex-shrink:0;
+}
+.op-name{font-size:12px;font-weight:600;}
+.op-role{font-size:10px;color:var(--text-mute);font-family:var(--mono);}
+
+/* ============ MAIN COLUMN ============ */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;width:100%;height:100%;min-height:0;}
+
+.topbar{
+  height:60px;flex-shrink:0;
+  padding:0 26px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+}
+.topbar-left{display:flex;align-items:center;gap:16px;}
+.topbar h2{font-size:15px;font-weight:700;}
+.topbar .divider{width:1px;height:20px;background:var(--line);}
+.topbar-meta{
+  display:flex;gap:16px;font-family:var(--mono);font-size:11px;color:var(--text-mute);
+}
+.topbar-meta span b{color:var(--text-dim);font-weight:600;}
+
+.conn-pill{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 12px;border-radius:20px;
+  background:var(--auto-bg);border:1px solid var(--auto-dim);
+  font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--auto);
+  letter-spacing:.04em;
+}
+.conn-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--auto);}
+.conn-pill.connecting{background:rgba(232,163,61,.08);border-color:var(--warn);color:var(--warn);}
+.conn-pill.connecting .dot{background:var(--warn);animation:blink 1s infinite;}
+.conn-pill.disconnected{background:var(--sos-bg);border-color:var(--sos-dim);color:var(--sos);}
+.conn-pill.disconnected .dot{background:var(--sos);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+/* ============ MODE SELECTOR BAR ============ */
+.mode-bar{
+  display:+flex;gap:2px;
+  padding:14px 26px 0;
+  background:var(--panel);
+  flex-shrink:0;
+}
+.mode-tab{
+  flex:1;
+  padding:13px 16px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-bottom:none;
+  border-radius:10px 10px 0 0;
+  cursor:pointer;
+  display:flex;align-items:center;gap:10px;
+  transition:background .15s;
+}
+.mode-tab:hover{background:var(--card-2);}
+.mode-icon{
+  width:30px;height:30px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.mode-icon svg{width:16px;height:16px;}
+.mode-text{text-align:left;}
+.mode-text .mt-name{font-size:12.5px;font-weight:700;letter-spacing:.02em;}
+.mode-text .mt-desc{font-size:10px;color:var(--text-mute);margin-top:1px;}
+
+.mode-tab[data-mode="AUTO"] .mode-icon{background:var(--auto-bg);color:var(--auto);}
+.mode-tab[data-mode="MANUAL"] .mode-icon{background:var(--manual-bg);color:var(--manual);}
+.mode-tab[data-mode="SOS"] .mode-icon{background:var(--sos-bg);color:var(--sos);}
+
+.mode-tab.active{background:var(--bg);border-bottom:1px solid var(--bg);position:relative;}
+.mode-tab[data-mode="AUTO"].active{box-shadow:inset 0 2px 0 var(--auto);}
+.mode-tab[data-mode="MANUAL"].active{box-shadow:inset 0 2px 0 var(--manual);}
+.mode-tab[data-mode="SOS"].active{box-shadow:inset 0 2px 0 var(--sos);}
+.mode-tab.active .mt-name{color:var(--text);}
+.mode-tab:not(.active) .mt-name{color:var(--text-dim);}
+
+/* ============ WORKSPACE GRID ============ */
+.workspace{
+  flex:1;
+  width:100%;
+  height:100%;
+  background:var(--bg);
+  padding:0;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0;
+  position:relative;
+  min-height:0;
+}
+@media(max-width:980px){.workspace{grid-template-columns:1fr;}}
+
+.panel-col{display:flex;flex-direction:column;gap:16px;min-width:0;}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:24px;
+}
+.card-head{
+  display:flex;align-items:center;justify-content:between;
+  margin-bottom:16px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--line-soft);
+}
+.card-head .ch-title{
+  font-size:11px;color:var(--text-mute);text-transform:uppercase;
+  letter-spacing:.08em;font-weight:700;display:flex;align-items:center;gap:8px;
+}
+.ch-badge{
+  margin-left:auto;
+  font-family:var(--mono);font-size:10px;
+  padding:3px 8px;border-radius:5px;
+  background:var(--card);color:var(--text-dim);border:1px solid var(--line);
+}
+
+/* Telemetry */
+.tele-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+.tele-box{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:18px 20px;min-height:100px;display:flex;flex-direction:column;justify-content:center;
+}
+.tele-lbl{font-size:11px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:700;display:flex;align-items:center;gap:8px;}
+.tele-val{font-family:var(--mono);font-size:34px;font-weight:800;margin-top:8px;line-height:1;color:var(--text);}
+.tele-unit{font-size:13px;color:var(--text-mute);font-weight:600;margin-left:6px;}
+.tele-range{font-size:10px;color:var(--text-mute);margin-top:6px;font-family:var(--mono);} 
+@media(max-width:980px){.tele-grid{grid-template-columns:repeat(2,1fr);}}
+
+/* Mode panel body — swaps per mode */
+.mode-panel{min-height:280px;}
+
+.state-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line-soft);}
+.state-row:last-child{border-bottom:none;}
+.state-lbl{font-size:12.5px;color:var(--text-dim);}
+.state-val{font-family:var(--mono);font-size:12.5px;font-weight:600;}
+
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 10px;border-radius:6px;
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.03em;
+}
+.pill.on{background:var(--auto-bg);color:var(--auto);}
+.pill.off{background:var(--card);color:var(--text-mute);border:1px solid var(--line);}
+.pill.warn{background:rgba(232,163,61,.1);color:var(--warn);}
+
+/* Ratio readout */
+.ratio-display{
+  display:flex;align-items:center;justify-content:center;gap:18px;
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:28px 20px;margin-bottom:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+}
+.ratio-seg{text-align:center;flex:1;position:relative;}
+.ratio-seg .rs-num{font-family:var(--mono);font-size:46px;font-weight:900;}
+.ratio-seg .rs-lbl{font-size:11px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.08em;margin-top:6px;}
+.ratio-seg.a .rs-num{color:var(--auto);}
+.ratio-seg.b .rs-num{color:var(--manual);}
+.ratio-seg.c .rs-num{color:var(--warn);}
+.ratio-colon{font-family:var(--mono);font-size:24px;color:var(--text-mute);padding:0 4px;align-self:flex-start;margin-top:10px;}
+
+/* Buttons */
+.btn-row{display:flex;gap:10px;}
+.btn{
+  flex:1;padding:13px 16px;border-radius:8px;border:1px solid transparent;
+  font-size:12.5px;font-weight:700;letter-spacing:.02em;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:filter .12s, transform .06s;
+}
+.btn:active{transform:scale(.98);}
+.btn:hover{filter:brightness(1.12);}
+.btn svg{width:14px;height:14px;}
+.btn-auto{background:var(--auto);color:#06150c;}
+.btn-manual{background:var(--manual);color:#04121f;}
+.btn-outline{background:transparent;border-color:var(--line);color:var(--text-dim);}
+.btn-outline:hover{border-color:var(--text-mute);}
+.btn-danger{background:var(--sos);color:#fff;}
+.btn-danger-outline{background:transparent;border:1px solid var(--sos-dim);color:var(--sos);}
+.btn:disabled{opacity:.35;cursor:not-allowed;filter:none;}
+
+/* Slider control (manual ratio) */
+.slider-group{margin-bottom:16px;}
+.slider-group:last-child{margin-bottom:0;}
+.slider-top{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:8px;}
+.slider-top .sname{color:var(--text-dim);font-weight:600;}
+.slider-top .sval{font-family:var(--mono);color:var(--text);font-weight:700;}
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:5px;border-radius:3px;
+  background:var(--line);outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--manual);cursor:pointer;border:2px solid #0a0c0f;
+  box-shadow:0 0 0 2px var(--manual);
+}
+input[type=range]#chemA::-webkit-slider-thumb{background:var(--auto);box-shadow:0 0 0 2px var(--auto);}
+input[type=range]#chemC::-webkit-slider-thumb{background:var(--warn);box-shadow:0 0 0 2px var(--warn);}
+
+/* ============ SOS MODE — signature seizure state ============ */
+.sos-active{position:relative;}
+.sos-strip{
+  display:none;
+  align-items:center;gap:10px;
+  padding:9px 26px;
+  background:var(--sos);
+  font-family:var(--mono);font-size:11.5px;font-weight:700;color:#fff;
+  letter-spacing:.05em;
+  flex-shrink:0;
+}
+.sos-strip.show{display:flex;animation:sospulse 1.4s ease-in-out infinite;}
+@keyframes sospulse{0%,100%{background:var(--sos);}50%{background:#c22a1c;}}
+.sos-strip .sos-dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:blink .6s infinite;}
+
+.sos-hero{
+  grid-column:1/-1;
+  background:linear-gradient(180deg, var(--sos-bg), transparent);
+  border:1px solid var(--sos-dim);
+  border-radius:14px;
+  padding:28px;
+  text-align:center;
+}
+.sos-hero .sh-eyebrow{font-family:var(--mono);font-size:11px;color:var(--sos);letter-spacing:.1em;font-weight:700;margin-bottom:10px;}
+.sos-hero h3{font-size:22px;margin-bottom:8px;}
+.sos-hero p{font-size:13px;color:var(--text-dim);max-width:480px;margin:0 auto 22px;line-height:1.6;}
+.kill-switch{
+  width:150px;height:150px;border-radius:50%;
+  margin:0 auto 18px;
+  background:radial-gradient(circle at 35% 30%, #ff5c48, var(--sos) 60%, var(--sos-dim) 100%);
+  border:5px solid rgba(255,255,255,.12);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  box-shadow:0 0 0 8px rgba(240,67,47,.08), 0 0 40px rgba(240,67,47,.35);
+  transition:transform .1s;
+}
+.kill-switch:hover{transform:scale(1.03);}
+.kill-switch:active{transform:scale(.96);}
+.kill-switch .ks-label{font-family:var(--mono);font-weight:800;font-size:15px;color:#fff;letter-spacing:.08em;text-align:center;line-height:1.4;}
+.sos-reasons{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:4px;}
+.reason-chip{
+  padding:8px 14px;border-radius:20px;
+  background:var(--card);border:1px solid var(--line);
+  font-size:11.5px;color:var(--text-dim);cursor:pointer;
+}
+.reason-chip:hover{border-color:var(--sos-dim);color:var(--text);}
+
+.sos-confirm{
+  margin-top:20px;padding:16px;border-radius:10px;
+  background:var(--card);border:1px solid var(--sos-dim);
+  display:none;
+}
+.sos-confirm.show{display:block;}
+.sos-confirm p{color:var(--text);font-size:12.5px;margin-bottom:12px;}
+
+/* ============ CHAT / LLM PANEL ============ */
+.chat-card{display:flex;flex-direction:column;padding:0;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--panel);min-height:0;box-shadow:0 20px 45px rgba(0,0,0,.22);position:absolute;top:20px;right:26px;max-height:min(76vh, 720px);width:min(420px, calc(100% - 52px));z-index:20;}
+.chat-head{
+  padding:16px 18px;border-bottom:1px solid var(--line-soft);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--panel);position:sticky;top:0;z-index:2;
+}
+.chat-avatar{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--manual),#7c5cff);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.chat-avatar svg{width:16px;height:16px;color:#fff;}
+.chat-head-text .ch-name{font-size:12.5px;font-weight:700;}
+.chat-head-text .ch-sub{font-size:10.5px;color:var(--text-mute);font-family:var(--mono);}
+.chat-head-badge{margin-left:auto;font-size:9.5px;font-family:var(--mono);color:var(--auto);background:var(--auto-bg);padding:3px 8px;border-radius:5px;border:1px solid var(--auto-dim);}
+
+.chat-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:12px;}
+.bubble{max-width:94%;padding:12px 14px;border-radius:10px;font-size:12.5px;line-height:1.55;}
+.bubble.user{align-self:flex-end;background:var(--manual-bg);border:1px solid var(--manual-dim);color:#cfe4fa;border-bottom-right-radius:3px;}
+.bubble.ai{align-self:flex-start;background:var(--card);border:1px solid var(--line);color:var(--text);border-bottom-left-radius:3px;}
+.bubble .b-tag{display:block;font-family:var(--mono);font-size:9px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.bubble.ai.rec strong{color:var(--auto);}
+.bubble img{max-width:100%;border-radius:6px;margin-top:8px;display:block;border:1px solid var(--line);}
+
+.chat-foot{padding:14px 16px;border-top:1px solid var(--line-soft);flex-shrink:0;}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{
+  flex:1;padding:11px 13px;border-radius:8px;
+  background:var(--card);border:1px solid var(--line);color:var(--text);
+  font-size:12.5px;outline:none;font-family:var(--sans);
+}
+.chat-input:focus{border-color:var(--manual);}
+.chat-send{
+  width:40px;height:40px;border-radius:8px;border:none;
+  background:var(--manual);color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.chat-send:hover{filter:brightness(1.1);}
+.chat-send svg{width:16px;height:16px;}
+.quick-row{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;}
+.quick-chip{
+  font-size:10.5px;padding:5px 10px;border-radius:14px;
+  background:transparent;border:1px solid var(--line);color:var(--text-mute);cursor:pointer;
+}
+.quick-chip:hover{border-color:var(--manual-dim);color:var(--manual);}
+
+/* ============ DSI DISPLAY VARIANT ============ */
+.llm-toggle,
+.dsi-toggle{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;border-radius:8px;background:var(--card);border:1px solid var(--line);
+  cursor:pointer;font-family:var(--mono);font-size:10.5px;color:var(--text-dim);
+}
+.llm-toggle:hover,
+.dsi-toggle:hover{border-color:var(--text-mute);}
+.llm-toggle.active{background:var(--manual-bg);border-color:var(--manual-dim);color:var(--manual);}
+.llm-toggle svg,
+.dsi-toggle svg{width:13px;height:13px;}
+
+.workspace.llm-hidden{grid-template-columns:1fr;}
+
+.auth-modal{
+  position:fixed;inset:0;
+  background:rgba(5,8,12,.78);
+  backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;
+  padding:20px;
+}
+
+/* ============ PLATFORM AUTH OVERLAY ============ */
+#platformAuth{
+  position:fixed;inset:0;background:linear-gradient(180deg,rgba(4,6,8,.9),rgba(4,6,8,.96));
+  display:flex;align-items:center;justify-content:center;z-index:1100;padding:20px;
+}
+.platform-card{width:min(520px,96%);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.platform-card h2{margin:0 0 8px;font-size:18px}
+.platform-card p{color:var(--text-dim);margin-bottom:14px}
+.platform-input{width:100%;padding:12px;border-radius:8px;background:var(--card);border:1px solid var(--line);color:var(--text);font-size:14px;margin-bottom:10px}
+.platform-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:10px}
+.platform-err{color:var(--sos);font-family:var(--mono);font-size:13px;margin-top:8px}
+
+/* When auth overlay is visible, make app non-interactive */
+body.auth-blocked .app{pointer-events:none;filter:blur(1px);user-select:none;}
+.auth-card{
+  width:min(420px,100%);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:24px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
+}
+.auth-card h3{font-size:18px;margin-bottom:8px;}
+.auth-card p{color:var(--text-dim);font-size:13px;line-height:1.6;margin-bottom:16px;}
+.auth-input{
+  width:100%;padding:11px 12px;border-radius:8px;
+  background:var(--card);border:1px solid var(--line);color:var(--text);
+  font-size:13px;outline:none;font-family:var(--sans);
+}
+.auth-input:focus{border-color:var(--manual);}
+.auth-actions{display:flex;gap:10px;margin-top:14px;}
+.auth-hint{font-family:var(--mono);font-size:11px;color:var(--text-mute);margin-top:10px;}
+
+body.dsi-mode .app{margin:0; width:100%; height:100%; min-width:100%; min-height:100%;}
+body.dsi-mode .rail{display:none;}
+body.dsi-mode .main{height:100%;}
+body.dsi-mode .workspace{height:100%;grid-template-columns:1fr !important;padding:0;gap:0;overflow:hidden;}
+body.dsi-mode .chat-card{
+  width:min(420px, calc(100% - 52px));
+  max-height:min(76vh, 720px);
+  min-height:360px;
+  top:20px;
+  right:26px;
+}
+body.dsi-mode .tele-grid{grid-template-columns:repeat(2,1fr);}
+body.dsi-mode .topbar{background:transparent;border-bottom:0;}
+body.dsi-mode .topbar-left{display:flex;align-items:center;gap:16px;}
+body.dsi-mode .topbar > div:last-child{margin-left:auto;}
+body.dsi-mode .topbar{display:flex;}
+body.dsi-mode .mode-bar{display:none;}
+body.dsi-mode .card{padding:16px;}
+body.dsi-mode .btn{padding:16px;font-size:13px;}
+body.dsi-mode .kill-switch{width:150px;height:150px;}
+body.dsi-mode::before{content:none;}
+
+.hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<!-- PLATFORM AUTH OVERLAY (blocks platform until authenticated) -->
+<div id="platformAuth">
+  <div class="platform-card">
+    <h2>Platform Sign In</h2>
+    <p>Enter your credentials to access the control platform.</p>
+    <input id="platUser" class="platform-input" placeholder="Username" autocomplete="username">
+    <input id="platPass" class="platform-input" placeholder="Password" type="password" autocomplete="current-password" onkeypress="if(event.key==='Enter')authenticatePlatform()">
+    <div class="platform-actions">
+      <button class="btn btn-outline" onclick="guestAccess()">Guest</button>
+      <button class="btn btn-manual" onclick="authenticatePlatform()">Sign In</button>
+    </div>
+    <div id="platErr" class="platform-err" aria-live="polite"></div>
+  </div>
+</div>
+
+<div class="app">
+
+  <div class="auth-modal hidden" id="authModal">
+    <div class="auth-card">
+      <h3>Manual Mode Authorization</h3>
+      <p>Enter the operator code to unlock Manual mode and access manual mixer controls.</p>
+      <input class="auth-input" id="authInput" type="password" placeholder="Operator code" onkeypress="if(event.key==='Enter')authenticateAuth()">
+      <div class="auth-actions">
+        <button class="btn btn-manual" onclick="authenticateAuth()">Unlock</button>
+        <button class="btn btn-outline" onclick="cancelAuth()">Cancel</button>
+      </div>
+      <div class="auth-hint">Demo code: 4821</div>
+    </div>
+  </div>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+
+    <div class="sos-strip" id="sosStrip">
+      <div class="sos-dot"></div>
+      <span>SOS ENGAGED — MIXER HALTED — ALL FIELD OPERATIONS SUSPENDED</span>
+    </div>
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <h2>Field Platform</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="llm-toggle" id="llmToggle" onclick="toggleLLMPanel()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <span>LLM</span>
+        </div>
+        <div class="dsi-toggle" onclick="toggleDSI()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <span id="dsiLabel">View: Web Platform</span>
+        </div>
+        <div class="conn-pill connecting" id="connPill">
+          <div class="dot"></div>
+          <span id="connLabel">Connecting…</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE -->
+    <div class="workspace llm-hidden" id="workspace">
+
+      <div class="panel-col">
+
+        <!-- Telemetry — always visible regardless of mode -->
+        <div class="card">
+          <div class="card-head">
+            <div class="ch-title">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M18.7 8l-5.1 5.1-2.8-2.8L7 14"/></svg>
+              Real-Time Telemetry
+            </div>
+            <span class="ch-badge">PostgreSQL · live</span>
+          </div>
+          <div class="tele-grid">
+            <div class="tele-box">
+              <div class="tele-lbl">🌡 Temp</div>
+              <div class="tele-val" id="tTemp" style="color:var(--sos);">26.4<span class="tele-unit">°C</span></div>
+              <div class="tele-range">range 18–32°C</div>
+            </div>
+            <div class="tele-box">
+              <div class="tele-lbl">💧 Humidity</div>
+              <div class="tele-val" id="tHum" style="color:var(--manual);">61.2<span class="tele-unit">%</span></div>
+              <div class="tele-range">range 40–70%</div>
+            </div>
+            <div class="tele-box">
+              <div class="tele-lbl">🌱 Soil Moist.</div>
+              <div class="tele-val" id="tSoil" style="color:var(--auto);">44.8<span class="tele-unit">%</span></div>
+              <div class="tele-range">target ≥40%</div>
+            </div>
+            <div class="tele-box">
+              <div class="tele-lbl">⚗ NPK Index</div>
+              <div class="tele-val" id="tNpk" style="color:var(--warn);">0.71</div>
+              <div class="tele-range">N deficient</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE PANEL: AUTOMATIC -->
+        <div class="card mode-panel" id="panel-AUTO">
+          <div class="card-head">
+            <div class="ch-title">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              Automatic Mixing — AI Decision Engine
+            </div>
+            <span class="ch-badge" style="color:var(--auto);border-color:var(--auto-dim);">ML ACTIVE</span>
+          </div>
+
+          <div class="ratio-display">
+            <div class="ratio-seg a"><div class="rs-num" id="rA">4.2</div><div class="rs-lbl">Chem A · N</div></div>
+            <div class="ratio-colon">:</div>
+            <div class="ratio-seg b"><div class="rs-num" id="rB">2.0</div><div class="rs-lbl">Chem B · P</div></div>
+            <div class="ratio-colon">:</div>
+            <div class="ratio-seg c"><div class="rs-num" id="rC">1.5</div><div class="rs-lbl">Chem C · K</div></div>
+          </div>
+
+          <div class="state-row"><span class="state-lbl">Model recommendation</span><span class="state-val" id="autoRecommendation" style="color:var(--auto);">+10% Nitrogen concentration</span></div>
+          <div class="state-row"><span class="state-lbl">Mixer status</span><span class="pill on" id="mixerPillAuto">● RUNNING</span></div>
+          <div class="state-row"><span class="state-lbl">Next recipe packet</span><span class="state-val" id="autoNextPacket">in 04:12</span></div>
+
+          <div class="btn-row" style="margin-top:16px;">
+            <button class="btn btn-outline" onclick="logAction('Auto recipe overridden — recalculating')">Recalculate Recipe</button>
+          </div>
+        </div>
+
+        <!-- MODE PANEL: MANUAL -->
+        <div class="card mode-panel hidden" id="panel-MANUAL">
+          <div class="card-head">
+            <div class="ch-title">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+              Manual Mixer Control — Operator Override
+            </div>
+            <span class="ch-badge" style="color:var(--manual);border-color:var(--manual-dim);">USER ARMED</span>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-top"><span class="sname">Chemical A — Nitrogen</span><span class="sval" id="sA">4.2</span></div>
+            <input type="range" id="chemA" min="0" max="10" step="0.1" value="4.2" oninput="updateSlider('A')">
+          </div>
+          <div class="slider-group">
+            <div class="slider-top"><span class="sname">Chemical B — Phosphorus</span><span class="sval" id="sB">2.0</span></div>
+            <input type="range" id="chemB" min="0" max="10" step="0.1" value="2.0" oninput="updateSlider('B')">
+          </div>
+          <div class="slider-group">
+            <div class="slider-top"><span class="sname">Chemical C — Potassium</span><span class="sval" id="sC">1.5</span></div>
+            <input type="range" id="chemC" min="0" max="10" step="0.1" value="1.5" oninput="updateSlider('C')">
+          </div>
+
+          <div class="state-row" style="margin-top:6px;">
+            <span class="state-lbl">Mixer status</span>
+            <span class="pill off" id="mixerPillManual">○ STOPPED</span>
+          </div>
+
+          <div class="btn-row" style="margin-top:14px;">
+            <button class="btn btn-auto" onclick="manualMixer('START')">▶ Start Mixer</button>
+            <button class="btn btn-danger-outline" onclick="manualMixer('STOP')">■ Stop Mixer</button>
+          </div>
+          <div class="btn-row" style="margin-top:10px;">
+            <button class="btn btn-outline" onclick="logAction('Field pump engaged — pushing solution to North Block')">Pump to Field</button>
+            <button class="btn btn-outline" onclick="setMode('AUTO')">Return to Auto</button>
+          </div>
+        </div>
+
+        <!-- MODE PANEL: SOS -->
+        <div class="card mode-panel hidden" id="panel-SOS">
+          <div class="sos-hero">
+            <div class="sh-eyebrow">EMERGENCY STOP</div>
+            <h3>Halt all mixer &amp; pump activity now</h3>
+            <p>Engaging SOS immediately cuts power to chemical pumps and the mixing motor, freezes the current recipe, and alerts every connected operator — remote and control room.</p>
+
+            <div class="kill-switch" onclick="openModeAuth('SOS','sos-action')" id="killSwitch">
+              <div class="ks-label">HOLD TO<br>HALT</div>
+            </div>
+
+            <div class="sos-reasons" id="sosReasons">
+              <div class="reason-chip" onclick="logAction('Reason logged: Leak detected at pump seal')">Leak detected</div>
+              <div class="reason-chip" onclick="logAction('Reason logged: Sensor reading out of safe range')">Sensor anomaly</div>
+              <div class="reason-chip" onclick="logAction('Reason logged: Operator judgment call')">Operator judgment</div>
+              <div class="reason-chip" onclick="logAction('Reason logged: Power/comms fault')">Power / comms fault</div>
+            </div>
+
+            <div class="sos-confirm" id="sosConfirm">
+              <p><strong style="color:var(--sos);">✓ Mixer halted.</strong> Chemical pumps de-energized. All connected displays (Web + DSI) now show SOS state. A field technician has been notified.</p>
+              <div class="btn-row">
+                <button class="btn btn-outline" onclick="clearSOS()">Clear SOS — Resume Auto Mode</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============ LLM CHAT — persistent across all modes ============ -->
+      <div class="card chat-card hidden">
+        <div class="chat-head">
+          <div class="chat-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div class="chat-head-text">
+            <div class="ch-name">Field LLM Assistant</div>
+            <div class="ch-sub">Large Language Model · Radxa Cubie A7S</div>
+          </div>
+          <span class="chat-head-badge">shared w/ DSI</span>
+        </div>
+
+        <div class="chat-body" id="chatBody">
+          <div class="bubble ai">
+            <span class="b-tag">LLM · North Block</span>
+            Good morning. Overnight NPK index dropped to 0.71 — nitrogen is trending low against the 7‑day average. Would you like me to raise Chemical A in the next auto‑generated recipe?
+          </div>
+          <div class="bubble user">Analyze this crop condition</div>
+          <div class="bubble ai rec">
+            <span class="b-tag">LLM · North Block</span>
+            The leaves show possible <strong>nitrogen deficiency</strong> — pale interveinal yellowing on lower leaves is consistent with early‑stage N stress.<br><br>
+            <strong>Recommended action:</strong> Increase nitrogen concentration by 10% in the next mix cycle.
+          </div>
+        </div>
+
+        <div class="chat-foot">
+          <div class="chat-input-row">
+            <input class="chat-input" id="chatInput" type="text" placeholder="Ask about field conditions, mix ratios, crop health…" onkeypress="if(event.key==='Enter')sendChat()">
+            <button class="chat-send" onclick="sendChat()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
+          <div class="quick-row">
+            <div class="quick-chip" onclick="quickAsk('Why is nutrient level low?')">Why is nutrient level low?</div>
+            <div class="quick-chip" onclick="quickAsk('Explain current field conditions')">Explain field conditions</div>
+            <div class="quick-chip" onclick="quickAsk('Suggest today\'s mixing ratio')">Suggest today's ratio</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== STATE ===================== */
+let currentMode = 'AUTO';
+let dsiView = false;
+
+/* ===================== PLATFORM AUTH ===================== */
+// Demo credential: user: admin  pass: agro2026
+function isPlatformAuthenticated(){
+  return sessionStorage.getItem('platformAuth') === '1';
+}
+
+function showPlatformAuth(show){
+  const el = document.getElementById('platformAuth');
+  if(!el) return;
+  el.classList.toggle('hidden', !show);
+  document.body.classList.toggle('auth-blocked', show);
+}
+
+function authenticatePlatform(){
+  const u = document.getElementById('platUser').value.trim();
+  const p = document.getElementById('platPass').value.trim();
+  const err = document.getElementById('platErr');
+  if(u === 'admin' && p === 'agro2026'){
+    sessionStorage.setItem('platformAuth','1');
+    if(err) err.textContent = '';
+    showPlatformAuth(false);
+    addBubble('ai','Welcome, '+u+'.', true);
+  } else {
+    err.textContent = 'Invalid username or password.';
+    addBubble('ai','Platform sign-in failed.', true);
+  }
+}
+
+function guestAccess(){
+  // Minimal access, still hide overlay but mark as guest (no elevated ops)
+  sessionStorage.setItem('platformAuth','guest');
+  showPlatformAuth(false);
+  addBubble('ai','Guest access enabled. Some features may be restricted.', true);
+}
+
+// Enforce auth immediately (avoid depending on DOMContentLoaded)
+(function initPlatformAuth(){
+  try{
+    if(!isPlatformAuthenticated()){
+      showPlatformAuth(true);
+      setTimeout(()=>{
+        const u = document.getElementById('platUser'); if(u) u.focus();
+      }, 120);
+    } else {
+      showPlatformAuth(false);
+    }
+  }catch(e){
+    // fallback: ensure overlay visible if anything goes wrong
+    showPlatformAuth(true);
+  }
+})();
+
+function toggleLLMPanel(){
+  const chat = document.querySelector('.chat-card');
+  const ws = document.getElementById('workspace');
+  const btn = document.getElementById('llmToggle');
+  if(!chat || !ws || !btn) return;
+  const isHidden = chat.classList.toggle('hidden');
+  ws.classList.toggle('llm-hidden', isHidden);
+  btn.classList.toggle('active', !isHidden);
+  if(!isHidden){
+    chat.style.display = 'flex';
+  }
+}
+
+/* ===================== WEBSOCKET — LIVE DATA FROM SIMULATOR / DB ===================== */
+/*
+  Inbound messages this client understands (JSON, one object per WS message):
+
+    { "type": "telemetry",
+      "data": { "temp": 26.4, "humidity": 61.2, "soil": 44.8, "npk": 0.71 } }
+
+    { "type": "auto_recipe",
+      "data": { "ratioA": 4.2, "ratioB": 2.0, "ratioC": 1.5,
+                 "recommendation": "+10% Nitrogen concentration",
+                 "mixerStatus": "RUNNING" | "STOPPED" | "HALTED",
+                 "nextPacketSeconds": 252 } }
+
+  Outbound commands this client sends when the operator acts (see
+  sendWSCommand calls in manualMixer / triggerSOS / clearSOS / updateSlider /
+  activateMode / logAction below):
+
+    { "type": "command", "action": "manual_mixer_start" }
+    { "type": "command", "action": "manual_mixer_stop" }
+    { "type": "command", "action": "set_manual_ratio", "payload": { "chem": "A", "value": 4.2 } }
+    { "type": "command", "action": "sos_trigger" }
+    { "type": "command", "action": "sos_clear" }
+    { "type": "command", "action": "mode_change", "payload": { "mode": "AUTO" } }
+    { "type": "command", "action": "log_event", "payload": { "message": "…" } }
+
+  Point WS_CONFIG.url at your simulator / Postgres-backed server below.
+  A matching example simulator (simulator.py) ships alongside this file —
+  run it and this dashboard will connect and start showing live values.
+*/
+const WS_CONFIG = {
+  url: `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws/telemetry`,
+  reconnectBaseDelay: 1500,
+  reconnectMaxDelay: 20000
+};
+
+let socket = null;
+let reconnectAttempts = 0;
+let reconnectTimer = null;
+
+function updateConnPill(state, label){
+  const pill = document.getElementById('connPill');
+  const lbl = document.getElementById('connLabel');
+  if(!pill || !lbl) return;
+  pill.classList.remove('connecting','disconnected');
+  if(state === 'connecting') pill.classList.add('connecting');
+  if(state === 'disconnected') pill.classList.add('disconnected');
+  lbl.textContent = label;
+}
+
+function connectWebSocket(){
+  updateConnPill('connecting', reconnectAttempts ? 'Reconnecting…' : 'Connecting…');
+  try{
+    socket = new WebSocket(WS_CONFIG.url);
+  }catch(e){
+    scheduleReconnect();
+    return;
+  }
+
+  socket.onopen = ()=>{
+    reconnectAttempts = 0;
+    updateConnPill('live', 'Live · WSS Connected');
+  };
+
+  socket.onmessage = (evt)=>{
+    let msg;
+    try{ msg = JSON.parse(evt.data); }catch(e){ return; }
+    handleWSMessage(msg);
+  };
+
+  socket.onclose = ()=>{
+    updateConnPill('disconnected', 'Disconnected');
+    scheduleReconnect();
+  };
+
+  socket.onerror = ()=>{
+    // The browser fires 'close' right after 'error', so reconnect is handled there.
+  };
+}
+
+function scheduleReconnect(){
+  clearTimeout(reconnectTimer);
+  const delay = Math.min(WS_CONFIG.reconnectBaseDelay * Math.pow(1.6, reconnectAttempts), WS_CONFIG.reconnectMaxDelay);
+  reconnectAttempts++;
+  reconnectTimer = setTimeout(connectWebSocket, delay);
+}
+
+function sendWSCommand(action, payload){
+  if(socket && socket.readyState === WebSocket.OPEN){
+    socket.send(JSON.stringify({type:'command', action, payload: payload || {}}));
+  }
+}
+
+function normalizeTelemetryPayload(data){
+  if(!data || typeof data !== 'object') return null;
+  return {
+    temp: Number(data.temperature ?? data.temp ?? 0),
+    humidity: Number(data.humidity ?? data.humidityValue ?? 0),
+    soil: Number(data.soil ?? data.soilMoisture ?? 44.8),
+    npk: Number(data.npk ?? data.npk_index ?? 0.71)
+  };
+}
+
+function updateTelemetry(data){
+  const payload = normalizeTelemetryPayload(data);
+  if(!payload) return;
+
+  const tempEl = document.getElementById('tTemp');
+  const humEl = document.getElementById('tHum');
+  const soilEl = document.getElementById('tSoil');
+  const npkEl = document.getElementById('tNpk');
+
+  if(tempEl) tempEl.innerHTML = `${payload.temp.toFixed(1)}<span class="tele-unit">°C</span>`;
+  if(humEl) humEl.innerHTML = `${payload.humidity.toFixed(1)}<span class="tele-unit">%</span>`;
+  if(soilEl) soilEl.innerHTML = `${payload.soil.toFixed(1)}<span class="tele-unit">%</span>`;
+  if(npkEl) npkEl.textContent = payload.npk.toFixed(2);
+}
+
+function updateAutoRecipe(data){
+  if(!data || typeof data !== 'object') return;
+  const a = document.getElementById('rA');
+  const b = document.getElementById('rB');
+  const c = document.getElementById('rC');
+  const rec = document.getElementById('autoRecommendation');
+  const packet = document.getElementById('autoNextPacket');
+
+  if(a && data.ratioA !== undefined) a.textContent = Number(data.ratioA).toFixed(1);
+  if(b && data.ratioB !== undefined) b.textContent = Number(data.ratioB).toFixed(1);
+  if(c && data.ratioC !== undefined) c.textContent = Number(data.ratioC).toFixed(1);
+  if(rec && data.recommendation) rec.textContent = data.recommendation;
+  if(packet && data.nextPacketSeconds !== undefined) {
+    const mins = Math.floor(data.nextPacketSeconds / 60);
+    const secs = data.nextPacketSeconds % 60;
+    packet.textContent = `in ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+  }
+}
+
+function handleWSMessage(msg){
+  if(!msg || typeof msg !== 'object') return;
+
+  if(msg.type === 'telemetry') {
+    updateTelemetry(msg.data);
+    return;
+  }
+
+  if(msg.type === 'auto_recipe') {
+    updateAutoRecipe(msg.data);
+    return;
+  }
+
+  if(msg.temperature !== undefined || msg.temp !== undefined || msg.humidity !== undefined) {
+    updateTelemetry(msg);
+    return;
+  }
+
+  if(msg.ratioA !== undefined || msg.ratioB !== undefined || msg.ratioC !== undefined) {
+    updateAutoRecipe(msg);
+  }
+}
+
+connectWebSocket();
+
+/* ===================== MODE SWITCHING ===================== */
+let pendingAuth = null; // {mode: 'MANUAL'|'SOS', action: 'view'|'sos-action'}
+
+function openModeAuth(targetMode, action='view'){
+  pendingAuth = {mode: targetMode, action};
+  const inp = document.getElementById('authInput');
+  if(inp) inp.value = '';
+  document.getElementById('authModal').classList.remove('hidden');
+  if(inp) setTimeout(()=>inp.focus(), 80);
+}
+
+function activateMode(mode){
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.toggle('active', t.dataset.mode===mode));
+  document.querySelectorAll('.mode-panel').forEach(p=>p.classList.add('hidden'));
+  document.getElementById('panel-'+mode).classList.remove('hidden');
+
+  const strip = document.getElementById('sosStrip');
+  const ws = document.getElementById('workspace');
+  if(mode==='SOS'){
+    strip.classList.add('show');
+    document.getElementById('panel-SOS').style.gridColumn = 'unset';
+  } else {
+    strip.classList.remove('show');
+    document.getElementById('sosConfirm').classList.remove('show');
+    document.getElementById('killSwitch').style.opacity = 1;
+  }
+  ws.style.gridTemplateColumns = dsiView ? '1fr' : '1.35fr 1fr';
+}
+function authenticateAuth(){
+  const input = document.getElementById('authInput');
+  const code = input ? input.value.trim() : '';
+  if(code === '4821'){
+    document.getElementById('authModal').classList.add('hidden');
+    if(pendingAuth){
+      const m = pendingAuth.mode;
+      const a = pendingAuth.action;
+      pendingAuth = null;
+      if(a === 'view'){
+        activateMode(m);
+        addBubble('ai', m+' mode unlocked.', true);
+      } else if(a === 'sos-action'){
+        // ensure SOS panel visible then trigger SOS action
+        activateMode('SOS');
+        setTimeout(()=>triggerSOS(), 60);
+      }
+    }
+  } else {
+    if(input) input.value = '';
+    if(input) input.focus();
+    addBubble('ai', 'Authentication failed. Enter the correct operator code.', true);
+  }
+}
+
+function cancelAuth(){
+  document.getElementById('authModal').classList.add('hidden');
+  const inp = document.getElementById('authInput'); if(inp) inp.value = '';
+  pendingAuth = null;
+  activateMode('AUTO');
+}
+
+function setMode(mode){
+  if(mode === 'MANUAL' || mode === 'SOS'){
+    openModeAuth(mode,'view');
+    return;
+  }
+  activateMode(mode);
+}
+
+/* ===================== TELEMETRY DRIFT ===================== */
+function drift(){
+  const t = document.getElementById('tTemp');
+  const h = document.getElementById('tHum');
+  const s = document.getElementById('tSoil');
+  let tv = (26 + Math.random()*1.2).toFixed(1);
+  let hv = (60 + Math.random()*2.5).toFixed(1);
+  let sv = (44 + Math.random()*1.5).toFixed(1);
+  t.innerHTML = tv+'<span class="tele-unit">°C</span>';
+  h.innerHTML = hv+'<span class="tele-unit">%</span>';
+  s.innerHTML = sv+'<span class="tele-unit">%</span>';
+}
+setInterval(drift, 3500);
+
+/* ===================== MANUAL SLIDERS ===================== */
+function updateSlider(which){
+  const v = document.getElementById('chem'+which).value;
+  document.getElementById('s'+which).textContent = parseFloat(v).toFixed(1);
+}
+
+function manualMixer(action){
+  const pill = document.getElementById('mixerPillManual');
+  if(action==='START'){
+    pill.className='pill on'; pill.textContent='● RUNNING';
+    logAction('Manual mixer START — operator initiated');
+  } else {
+    pill.className='pill off'; pill.textContent='○ STOPPED';
+    logAction('Manual mixer STOP — operator initiated');
+  }
+}
+
+/* ===================== SOS ===================== */
+let holdTimer=null;
+function triggerSOS(){
+  const ks = document.getElementById('killSwitch');
+  ks.style.opacity=.6;
+  document.getElementById('sosConfirm').classList.add('show');
+  document.getElementById('mixerPillAuto').className='pill off';
+  document.getElementById('mixerPillAuto').textContent='○ HALTED';
+  addBubble('ai','SOS engaged by operator. Mixer motor and chemical pumps de‑energized. Recipe frozen at last known state. This event has been logged and pushed to all connected displays.', true);
+}
+function clearSOS(){
+  document.getElementById('sosConfirm').classList.remove('show');
+  document.getElementById('killSwitch').style.opacity=1;
+  document.getElementById('mixerPillAuto').className='pill on';
+  document.getElementById('mixerPillAuto').textContent='● RUNNING';
+  setMode('AUTO');
+  logAction('SOS cleared — system resumed in Automatic mode');
+}
+
+/* ===================== DSI TOGGLE ===================== */
+function toggleDSI(){
+  dsiView = !dsiView;
+  document.body.classList.toggle('dsi-mode', dsiView);
+  const dsiLabel = document.getElementById('dsiLabel');
+  if(dsiLabel) dsiLabel.textContent = dsiView ? 'View: DSI Display' : 'View: Web Platform';
+  const ws = document.getElementById('workspace');
+  if(ws){
+    if(dsiView){
+      // enter DSI: use single column and remove extra gaps
+      ws.style.gridTemplateColumns = '1fr';
+      ws.style.padding = '0';
+      ws.style.gap = '0';
+      ws.style.overflow = 'hidden';
+    } else {
+      // exit DSI: clear any inline sizing so CSS can restore full layout
+      ws.style.gridTemplateColumns = '';
+      ws.style.padding = '';
+      ws.style.gap = '';
+      ws.style.overflow = '';
+    }
+    // force a layout recalculation in the browser
+    setTimeout(()=>window.dispatchEvent(new Event('resize')), 50);
+  }
+  const toggle = document.querySelector('.dsi-toggle');
+  if(toggle){
+    toggle.style.opacity = '1';
+    toggle.style.pointerEvents = 'auto';
+  }
+}
+
+/* ===================== CHAT / LLM ===================== */
+const chatBody = document.getElementById('chatBody');
+function addBubble(role, text, isRec){
+  const b = document.createElement('div');
+  b.className = 'bubble '+role+(isRec?' rec':'');
+  if(role==='ai'){
+    const tag = document.createElement('span');
+    tag.className='b-tag';
+    tag.textContent = dsiView ? 'LLM · DSI Control Room' : 'LLM · North Block';
+    b.appendChild(tag);
+    const t = document.createElement('span');
+    t.innerHTML = text;
+    b.appendChild(t);
+  } else {
+    b.textContent = text;
+  }
+  chatBody.appendChild(b);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function sendChat(){
+  const input = document.getElementById('chatInput');
+  const val = input.value.trim();
+  if(!val) return;
+  addBubble('user', val);
+  input.value='';
+  setTimeout(()=>respond(val), 500);
+}
+function quickAsk(text){
+  addBubble('user', text);
+  setTimeout(()=>respond(text), 500);
+}
+function respond(query){
+  const q = query.toLowerCase();
+  let reply;
+  if(q.includes('why') && q.includes('low')){
+    reply = 'Soil nitrogen has decreased by <strong>15%</strong> over the last 48 hours, likely from irrigation runoff after yesterday\'s cycle.<br><br><strong>Recommended action:</strong> Increase nitrogen concentration in the next mix.';
+  } else if(q.includes('condition')){
+    reply = 'Current field state: temperature and humidity are within normal range. Soil moisture is adequate at target. NPK index of 0.71 indicates mild nitrogen deficiency — otherwise stable.';
+  } else if(q.includes('ratio') || q.includes('mix')){
+    reply = 'Based on today\'s readings, I\'d suggest a <strong>4.6 : 2.0 : 1.5</strong> ratio (A:B:C) — a 10% bump on Chemical A to correct the nitrogen trend. Apply this in Automatic mode, or dial it in manually.';
+  } else {
+    reply = 'Logged. I\'ll factor that into the next field analysis cycle and flag it in the shared session for the control room display.';
+  }
+  addBubble('ai', reply, true);
+}
+
+/* ===================== ACTION LOG (toast-style bubble) ===================== */
+function logAction(msg){
+  addBubble('ai', '<em style="color:var(--text-mute);font-style:normal;">'+msg+'</em>');
+}
+</script>
+</body>
+</html>
